@@ -11,3 +11,45 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+source /usr/local/opt/asdf/libexec/asdf.sh
+export PATH="/usr/local/opt/libpq/bin:/usr/local/sbin:/usr/local/bin:$PATH:$(go env GOPATH)/bin"
+alias 'e'='emacs -nw'
+
+
+function pw () {
+  local stack="${1:-$USER}"
+  echo "Searching for a secret in $stack's stacks..." >&2
+  local secretname=$(aws-secrets-manager list | grep -i $stack | grep -i aurora | head -n1)
+  echo "Found $secretname" >&2
+  local db_password=$(aws-secrets-manager get "$secretname" | jq -r .password)
+  echo -n "$db_password" | pbcopy
+  echo "$db_password"
+} 
+
+
+vterm_printf(){
+    if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ] ); then
+        # Tell tmux to pass the escape sequences through
+        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
+    elif [ "${TERM%%-*}" = "screen" ]; then
+        # GNU screen (screen, screen-256color, screen-256color-bce)
+        printf "\eP\e]%s\007\e\\" "$1"
+    else
+        printf "\e]%s\e\\" "$1"
+    fi
+}
+
+
+vterm_prompt_end() {
+    vterm_printf "51;A$(whoami)@$(hostname):$(pwd)";
+}
+setopt PROMPT_SUBST
+PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+
+PATH="/Users/justin/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/Users/justin/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/Users/justin/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/Users/justin/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/Users/justin/perl5"; export PERL_MM_OPT;
+
+

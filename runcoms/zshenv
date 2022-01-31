@@ -9,3 +9,14 @@
 if [[ ( "$SHLVL" -eq 1 && ! -o LOGIN ) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprofile"
 fi
+
+
+export AWS_MFA_ARN=arn:aws:iam::457442197808:mfa/justin
+export AWS_PROFILE=canopy
+
+if [[ -e "${HOME}/.auth/op.session" ]]; then
+  source "${HOME}/.auth/op.session"
+fi
+
+
+export OP_ITEM_AWS="3be3j56zlb2msb7gqcn7nnpxya"
